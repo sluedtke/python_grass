@@ -79,36 +79,57 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " get  GISBASE from the source file
 "
-function GRASSDBASE(grassdbase)
+function EVAL_python(pattern)
 " Get the arguments in python
 python<<EOF
 import vim 
 import os 
 import sys
-gisdbase = vim.eval("a:grassdbase")
-gisdbase=eval(gisdbase)
-print gisdbase
-vim.command("let gisdbase= '%s'" % gisdbase)
+temp = vim.eval("a:pattern")
+temp=eval(temp)
+vim.command("let temp= '%s'" % temp)
 EOF
-return(gisdbase)
+return(temp)
 endfunction
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"find python-grass-activate string
+function INIT_python_grass(python_grass_init)
+	
+	let python_grass_init=a:python_grass_init
+
+	"get line number first of each entry of the python_grass_pattlist
+	"
+	let lnum=search(python_grass_init)
+	echo lnum
+
+	if lnum==0
+		let python_grass_start=0
+	else
+		let python_grass_start=1
+	endif
+	
+	echo python_grass_start
+	return python_grass_start
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""
+let python_grass_start=INIT_python_grass(python_grass_init)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " get LOCATION_NAME, MAPSET and GISBASE from the source file
 "
-function GRASSBuildLocation(GRASSpatternList, GRASSsep)
+function GRASSBuildLocation(python_grass_pattlist)
 
-	let GRASSpatternList=a:GRASSpatternList
-	let GRASSsep=a:GRASSsep
+	let python_grass_pattlist=a:python_grass_pattlist
 	let temp=[]
 	let index = 0
 
-	while index < len(GRASSpatternList)
+	while index < len(python_grass_pattlist)
 
-		let PATTERN = GRASSpatternList[index]
+		let PATTERN = python_grass_pattlist[index]
 
-		"get line number first of each entry of the GRASSPATTERNLIST
+		"get line number first of each entry of the python_grass_pattlist
 		let lnum= search(PATTERN)
 
 		"get the string 
@@ -116,13 +137,10 @@ function GRASSBuildLocation(GRASSpatternList, GRASSsep)
 
 		"get all after the GRASSsep
 		"first, the position 
-
-		let PosNameSep=match(TempName, GRASSsep)
+		let PosNameSep=match(TempName, '=')
 		let TempName = strpart(TempName, PosNameSep+1)
 
-		if index==0
-			let TempName=GRASSDBASE(TempName)
-		endif
+		let TempName=EVAL_python(TempName)
 
 		"add the entry to the list
 		call add(temp, TempName)
@@ -130,21 +148,20 @@ function GRASSBuildLocation(GRASSpatternList, GRASSsep)
 		let index = index + 1
 
 	endwhile
-
 	"put to list into a string
 	let LOCATION = join(temp, '/')
 	return LOCATION
 endfunction
 
 " Start GRASS 
-"function StartGRASS(GRASSpatternList, GRASSsep)
+"function StartGRASS(python_grass_pattlist)
 function StartGRASS()
-	let GRASSpatternList=g:GRASSpatternList
-	let GRASSsep=g:GRASSsep
+
+	let python_grass_pattlist=g:python_grass_pattlist
 	
 	"call the function to create a string that defines the LOCATION string that is
 	"passed to the grass command
-	let a:LOCATION=GRASSBuildLocation(GRASSpatternList, GRASSsep)
+	let a:LOCATION=GRASSBuildLocation(python_grass_pattlist)
 	" Change to buffer's directory before starting GRASS
 	lcd %:p:h
 	exec 'ScreenShell grass -text ' . a:LOCATION
@@ -154,14 +171,14 @@ function StartGRASS()
 	call g:ScreenShellSend('import os')
 	call g:ScreenShellSend('import sys')
 
-	call g:ScreenShellSend('sys.path.append(os.path.join(os.environ['GISBASE'], "etc", "python"))')
+	call g:ScreenShellSend('sys.path.append(os.path.join(os.environ['GISBASE'], "etc", "python")))
 
 	call g:ScreenShellSend('import grass.script as grass')
 	call g:ScreenShellSend('import grass.script.setup as gsetup')
 
 	" Go back to original directory:
 	lcd -
-    echon
+    echo
 endfunction
 
 " Start PYTH 
@@ -270,9 +287,11 @@ unlet b:bname
 "==========================================================================
 
 "start a screen
-"nmap <F2> :call StartPYTH()<CR>
-nmap <F2> :call StartGRASS()<CR>
-
+if python_grass_start==1
+	nmap <F2> :call StartGRASS()<CR>
+else
+	nmap <F2> :call StartPYTH()<CR>
+endif
 
 "send code
 nmap <LocalLeader>l :call SendLineToPYTH("down")<CR>
