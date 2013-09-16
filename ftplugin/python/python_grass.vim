@@ -93,26 +93,26 @@ return(temp)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"find python-grass-activate string
-function INIT_python_grass(python_grass_init)
-	
-	let python_grass_init=a:python_grass_init
-
-	"get line number first of each entry of the python_grass_pattlist
-	"
-	let lnum=search(python_grass_init)
-	echo lnum
-
-	if lnum==0
-		let python_grass_start=0
-	else
-		let python_grass_start=1
-	endif
-	
-	echo python_grass_start
-	return python_grass_start
-endfunction
-
+" "find python-grass-activate string
+" function INIT_python_grass(python_grass_init)
+" 	
+" 	let python_grass_init=a:python_grass_init
+" 
+" 	"get line number first of each entry of the python_grass_pattlist
+" 	"
+" 	let lnum=search(python_grass_init)
+" 	echo lnum
+" 
+" 	if lnum==0
+" 		let python_grass_start=0
+" 	else
+" 		let python_grass_start=1
+" 	endif
+" 	
+" 	echo python_grass_start
+" 	return python_grass_start
+" endfunction
+" 
 """"""""""""""""""""""""""""""""""""""""""""
 let python_grass_start=INIT_python_grass(python_grass_init)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -286,12 +286,11 @@ unlet b:bname
 
 "==========================================================================
 
-"start a screen
-if python_grass_start==1
-	nmap <F2> :call StartGRASS()<CR>
-else
-	nmap <F2> :call StartPYTH()<CR>
-endif
+" start a screen with GRASS and ipython
+nmap <F2> :call StartGRASS()<CR>
+
+" start a screen without GRASS and only ipyhton
+nmap <F3> :call StartPYTH()<CR>
 
 "send code
 nmap <LocalLeader>l :call SendLineToPYTH("down")<CR>
