@@ -114,7 +114,7 @@ endfunction
 " endfunction
 " 
 """"""""""""""""""""""""""""""""""""""""""""
-let python_grass_start=INIT_python_grass(python_grass_init)
+" let python_grass_start=INIT_python_grass(python_grass_init)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " get LOCATION_NAME, MAPSET and GISBASE from the source file
@@ -168,13 +168,13 @@ function StartGRASS()
 
 	call g:ScreenShellSend('ipython')
 
-	call g:ScreenShellSend('import os')
-	call g:ScreenShellSend('import sys')
+	" call g:ScreenShellSend('import os')
+	" call g:ScreenShellSend('import sys')
 
-	call g:ScreenShellSend('sys.path.append(os.path.join(os.environ['GISBASE'], "etc", "python")))
+	" call g:ScreenShellSend('sys.path.append(os.path.join(os.environ['GISBASE'], "etc", "python")))
 
-	call g:ScreenShellSend('import grass.script as grass')
-	call g:ScreenShellSend('import grass.script.setup as gsetup')
+	" call g:ScreenShellSend('import grass.script as grass')
+	" call g:ScreenShellSend('import grass.script.setup as gsetup')
 
 	" Go back to original directory:
 	lcd -
