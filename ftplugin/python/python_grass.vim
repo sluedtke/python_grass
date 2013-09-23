@@ -1,3 +1,22 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"       Filename: python_grass.vim
+
+"       Authors: Stefan Luedtke
+"		 Jakson Alves de Aquino
+"		 Jose Claudio Faria
+"
+"                Based on previous work by Johannes Ranke
+
+"       Created: Tuesday 29 January 2013 18:42:51 CET
+
+"       Last modified: Tuesday 24 September 2013 00:11:03 CEST
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""""""""""""""""""""  	PURPOSE		""""""""""""""""""""""
+
+
 "  This program is free software; you can redistribute it and/or modify
 "  it under the terms of the GNU General Public License as published by
 "  the Free Software Foundation; either version 2 of the License, or
@@ -11,23 +30,15 @@
 "  A copy of the GNU General Public License is available at
 "  http://www.r-project.org/Licenses/
 
-"==========================================================================
-" ftplugin for PYTH files
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
-" Authors: Stefan Lüdtke but, the work is based to 99.9% on the work of the authors below.
-"		 Jakson Alves de Aquino <jalvesaq@gmail.com> 
-"		 Jose Claudio Faria
-"          
-"          Based on previous work by Johannes Ranke
+" ftplugin for PYTH files that use GRASS GIS
 "
-" Last Change: Fri Sep 02, 2011  09:25AM
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"====================	FUNCTIONS	===========================
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "
-"==========================================================================
-"
-"
-"=======================	FUNCTIONS	===========================
-"
-" Skip empty lines and lines whose first non blank char is '#'
+" Skip empty lines 
 "
 function GoDown()
     let i = line(".") + 1
@@ -93,30 +104,7 @@ return(temp)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" "find python-grass-activate string
-" function INIT_python_grass(python_grass_init)
-" 	
-" 	let python_grass_init=a:python_grass_init
-" 
-" 	"get line number first of each entry of the python_grass_pattlist
-" 	"
-" 	let lnum=search(python_grass_init)
-" 	echo lnum
-" 
-" 	if lnum==0
-" 		let python_grass_start=0
-" 	else
-" 		let python_grass_start=1
-" 	endif
-" 	
-" 	echo python_grass_start
-" 	return python_grass_start
-" endfunction
-" 
-""""""""""""""""""""""""""""""""""""""""""""
-" let python_grass_start=INIT_python_grass(python_grass_init)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " get LOCATION_NAME, MAPSET and GISBASE from the source file
 "
 function GRASSBuildLocation(python_grass_pattlist)
@@ -156,25 +144,52 @@ endfunction
 " Start GRASS 
 "function StartGRASS(python_grass_pattlist)
 function StartGRASS()
+	
+	"""""""""""""""""""""""""""""""""""""""
+	" Set variables if not given in .vimrc
+	if exists("g:python_grass_pattlist")
+		let python_grass_pattlist=g:python_grass_pattlist
+	else
+		let python_grass_pattlist=["gisdbase=","location=","mapset="]
+	endif
+		
+	if exists("g:python_grass_gui")
+		let python_grass_gui=g:python_grass_gui
+	else
+		let python_grass_gui=0
+	endif
 
-	let python_grass_pattlist=g:python_grass_pattlist
+	if exists("g:python_grass_import")
+		let python_grass_import=g:python_grass_import
+	else
+		let python_grass_import=0
+	endif
+	"""""""""""""""""""""""""""""""""""""""
+
 	
 	"call the function to create a string that defines the LOCATION string that is
 	"passed to the grass command
 	let a:LOCATION=GRASSBuildLocation(python_grass_pattlist)
 	" Change to buffer's directory before starting GRASS
 	lcd %:p:h
-	exec 'ScreenShell grass --wxpython ' . a:LOCATION
 
+	" start in text mode or with wxpython gui
+	if python_grass_gui==1
+		exec 'ScreenShell grass --wxpython ' . a:LOCATION
+	else
+		exec 'ScreenShell grass --text ' . a:LOCATION
+	endif
+	
 	call g:ScreenShellSend('ipython')
+	
+	" send standard modules to import?
+	if python_grass_import==1
+		call g:ScreenShellSend('import os')
+		call g:ScreenShellSend('import sys')
 
-	" call g:ScreenShellSend('import os')
-	" call g:ScreenShellSend('import sys')
-
-	" call g:ScreenShellSend('sys.path.append(os.path.join(os.environ['GISBASE'], "etc", "python")))
-
-	" call g:ScreenShellSend('import grass.script as grass')
-	" call g:ScreenShellSend('import grass.script.setup as gsetup')
+		call g:ScreenShellSend('import grass.script as grass')
+		call g:ScreenShellSend('import grass.script.setup as gsetup')
+	endif
 
 	" Go back to original directory:
 	lcd -
@@ -214,7 +229,7 @@ function SendSelectionToPYTH(e, m)
     endif
 endfunction
 
-" Send current line to PYTH. Don't go down if called by <S-Enter>.
+" Send current line to PYTH.
 function SendLineToPYTH(godown)
     echon
     let line = getline(".")
@@ -226,7 +241,7 @@ function SendLineToPYTH(godown)
     return
     endif
 
-    let b:needsnewomnilist = 1
+    " let b:needsnewomnilist = 1
     let ok = SendCmdToPYTH(line)
     if ok
         if a:godown =~ "down"
@@ -297,3 +312,6 @@ nmap <LocalLeader>l :call SendLineToPYTH("down")<CR>
 vmap <LocalLeader>l <ESC> :call SendSelectionToPYTH("no", "down")<CR>
 vmap <LocalLeader>ss <ESC> :call SendSelectionToPYTH("no", "down")<CR>
 nmap <LocalLeader>rq :call PYTHQuit()<CR>
+
+"==========================================================================
+"==========================================================================
