@@ -1,4 +1,4 @@
-####PYTHON-GRASS PLUGIN FOR (G)VIM
+####PYTHON-GRASS PLUGIN FOR GVIM
 
 This file-type plugin is inspired by the work of the
 [vim-r-plugin]((https://github.com/vim-scripts/Vim-R-plugin.git). To be totally honest, I
