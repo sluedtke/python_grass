@@ -164,7 +164,7 @@ function StartGRASS()
 	let a:LOCATION=GRASSBuildLocation(python_grass_pattlist)
 	" Change to buffer's directory before starting GRASS
 	lcd %:p:h
-	exec 'ScreenShell grass -text ' . a:LOCATION
+	exec 'ScreenShell grass --wxpython ' . a:LOCATION
 
 	call g:ScreenShellSend('ipython')
 
