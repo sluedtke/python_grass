@@ -10,7 +10,7 @@
 
 "       Created: Tuesday 29 January 2013 18:42:51 CET
 
-"       Last modified: Tuesday 24 September 2013 00:11:03 CEST
+"       Last modified: Tuesday 24 September 2013 14:15:47 CEST
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -62,16 +62,6 @@ function PYTHSourceLines(lines, e)
     return ok
 endfunction
 
-"" Send file to PYTH
-"function SendFileToPYTH(e)
-    "echon
-    "let lines = getline("1", line("$"))
-    "let ok = PYTHSourceLines(lines, a:e)
-    "if  ok == 0
-        "return
-    "endif
-"endfunction
-
 
 " Function to send commands
 " return 0 on failure and 1 on success
@@ -80,7 +70,7 @@ function SendCmdToPYTH(cmd)
     let cmd = "\013" . "\025" . a:cmd
 
     if !exists("g:ScreenShellSend")
-        call PYTHWarningMsg("Did you already start PYTH?")
+        echo "Did you already start the plugin?"
         return 0
     endif
     call g:ScreenShellSend(cmd)
@@ -174,16 +164,24 @@ function StartGRASS()
 	lcd %:p:h
 
 	" start in text mode or with wxpython gui
-	if python_grass_gui==1
-		exec 'ScreenShell grass --wxpython ' . a:LOCATION
+	" check whether gui is running
+	if has('gui_running')
+		if python_grass_gui==1
+			exec 'ScreenShell grass --wxpython ' . a:LOCATION
+		else
+			exec 'ScreenShell grass --text ' . a:LOCATION
+		endif
 	else
+	" if not -text mode only
 		exec 'ScreenShell grass --text ' . a:LOCATION
 	endif
-	
+
+	" start ipython
 	call g:ScreenShellSend('ipython')
 	
 	" send standard modules to import?
 	if python_grass_import==1
+
 		call g:ScreenShellSend('import os')
 		call g:ScreenShellSend('import sys')
 
