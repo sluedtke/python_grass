@@ -69,11 +69,11 @@ endfunction
 
 function Send_cmd_to_gpython(cmd)
   " format the command 
-  let a:str = substitute(a:cmd, "'", "'\\\\''", "g")
+  let str = substitute(a:cmd, "'", "'\\\\''", "g")
   " parse it to tmux via paste-buffer  (tmux internal command)
-  let a:scmd = "tmux -L gpython_vim set-buffer '" . a:str . "\<C-M>' && tmux -L gpython_vim paste-buffer -t foo.0"
+  let scmd = "tmux -L gpython_vim set-buffer '" . str . "\<C-M>' && tmux -L gpython_vim paste-buffer -t foo.0"
   " call the command via system
-  call system(a:scmd)
+  call system(scmd)
 endfunction
 
 nmap <F3> :call Start_gpython()<CR>
