@@ -31,19 +31,26 @@
 "  http://www.r-project.org/Licenses/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"
-" ftplugin for PYTH files that use GRASS GIS
-"
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "====================	FUNCTIONS	===========================
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " start a screen without GRASS and only ipyhton
 "
-
+" set the termial emulator that is used .. should be user variable late on
 let g:python_term = "konsole"
+
+" building the start up string for the terminal
+" * workdir expands to the dir of the current file I think 
+" * -e is quite crucial (executes command after startup)
+"
+if g:python_term == "konsole"
+  let g:rplugin_termcmd = "konsole --workdir '" . expand("%:p:h") . "' -e"
+endif
+
+" tempdir for tmuxconf - no good for windows
 let g:rplugin_tmpdir = "/tmp"
+
 function StartPYTH()
-  
+  " build the tmux conf file that is parsed at startup
   let cnflines = ['set-option -g prefix C-a',
         \ 'unbind-key C-b',
         \ 'bind-key C-a send-prefix',
@@ -51,35 +58,25 @@ function StartPYTH()
         \ 'set -g status off',
         \ 'set -g default-terminal "screen-256color"',
         \ "set -g terminal-overrides 'xterm*:smcup@:rmcup@'" ]
-
   call writefile(cnflines, g:rplugin_tmpdir . "/tmux.conf")
-
   let tmuxcnf = '-f "' . g:rplugin_tmpdir . "/tmux.conf" . '"'
 
-  let a:opencmd = printf("%s 'tmux -L vimr -2 %s new-session -s foo' &", g:python_term, tmuxcnf)
-  echo a:opencmd
-
-  " let a:opencmd = printf("%s 'tmux -L pythonvim new-session -s foo' &", g:python_term)
-  call system(a:opencmd)
+  " start the terminal emulator and within that, the tmux session that is used for communication
+  let opencmd = printf("%s tmux -L vimr -2 %s new-session -s foo &", g:rplugin_termcmd, tmuxcnf)
+  call system(opencmd)
 endfunction
 
 
 function SendLs(cmd)
-  " Create a custom tmux.conf
+  " format the command 
   let a:str = substitute(a:cmd, "'", "'\\\\''", "g")
-  let a:scmd = "tmux -L vimr set-buffer '" . a:str . "\<C-M>' && tmux -L vimr paste-buffer -t foo.0'"
-  let rlog = system(a:scmd)
-  if v:shell_error
-    let rlog = substitute(rlog, '\n', ' ', 'g')
-    echo rlog
-    " call RWarningMsg(rlog)
-    " call ClearRInfo()
-    return 0
-  endif
-  return 1
+  " parse it to tmux via paste-buffer  (tmux internal command)
+  let a:scmd = "tmux -L vimr set-buffer '" . a:str . "\<C-M>' && tmux -L vimr paste-buffer -t foo.0"
+  " call the command via system
+  call system(a:scmd)
 endfunction
 
 nmap <F3> :call StartPYTH()<CR>
-nmap <F4> :call SendLs("R")<CR>
+nmap <F4> :call SendLs("ipython")<CR>
 "==========================================================================
 "==========================================================================
