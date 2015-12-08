@@ -37,6 +37,7 @@
 "
 " set the termial emulator that is used .. should be user variable late on
 let g:gpython_term = "konsole"
+let g:gpython_interpreter = "ipython"
 
 " building the start up string for the terminal
 " * workdir expands to the dir of the current file I think 
@@ -49,6 +50,20 @@ endif
 " tempdir for tmuxconf - no good for windows
 let g:gpython_tmpdir = "/tmp"
 
+" Function that send a command to the listening tmux session
+"
+function Send_cmd_to_gpython(cmd)
+  " format the command 
+  echo a:cmd
+  let str = substitute(a:cmd, "'", "'\\\\''", "g")
+  " parse it to tmux via paste-buffer  (tmux internal command)
+  let scmd = "tmux -L gpython_vim set-buffer '" . str . "\<C-M>' && tmux -L gpython_vim paste-buffer -t foo.0"
+  " call the command via system
+  call system(scmd)
+endfunction
+
+" Starting an external shell with a tmux session and start the interpreter
+"
 function Start_gpython()
   " build the tmux conf file that is parsed at startup
   let cnflines = ['set-option -g prefix C-a',
@@ -64,19 +79,15 @@ function Start_gpython()
   " start the terminal emulator and within that, the tmux session that is used for communication
   let opencmd = printf("%s tmux -L gpython_vim -2 %s new-session -s foo &", g:gpython_term_cmd, tmuxcnf)
   call system(opencmd)
+  
+  " without the additional time, the python interpreter does not start
+  sleep 1200m
+
+  " after opening the tmux session, we start the interpreter
+  call Send_cmd_to_gpython(g:gpython_interpreter)
+
 endfunction
 
-
-function Send_cmd_to_gpython(cmd)
-  " format the command 
-  let str = substitute(a:cmd, "'", "'\\\\''", "g")
-  " parse it to tmux via paste-buffer  (tmux internal command)
-  let scmd = "tmux -L gpython_vim set-buffer '" . str . "\<C-M>' && tmux -L gpython_vim paste-buffer -t foo.0"
-  " call the command via system
-  call system(scmd)
-endfunction
-
-nmap <F3> :call Start_gpython()<CR>
-nmap <F4> :call Send_cmd_to_gpython("ipython")<CR>
+nmap <F2> :call Start_gpython()<CR>
 "==========================================================================
 "==========================================================================
