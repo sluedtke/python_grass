@@ -54,7 +54,6 @@ let g:gpython_tmpdir = "/tmp"
 "
 function Send_cmd_to_gpython(cmd)
   " format the command 
-  echo a:cmd
   let str = substitute(a:cmd, "'", "'\\\\''", "g")
   " parse it to tmux via paste-buffer  (tmux internal command)
   let scmd = "tmux -L gpython_vim set-buffer '" . str . "\<C-M>' && tmux -L gpython_vim paste-buffer -t foo.0"
