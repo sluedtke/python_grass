@@ -16,17 +16,17 @@ The mappings are:
 
 Starting the interpreter (ipython) in _normal mode_
 
-* <LocalLeader>ro 
-* <F2>
+* `<LocalLeader>`ro 
+* `<F2>`
 
 Send current line under the cursor in _normal mode_
 
-* <LocalLeader>l 
+* `<LocalLeader>`l 
 
-Send selection (as well parts of a line) in _visual mode_
+Send selection (as well as parts of a line) in _visual mode_
 
-* <LocalLeader>l
-* <LocalLeader>ss
+* `<LocalLeader>`l
+* `<LocalLeader>`ss
 
 ## Future stuff 
 The plugin should be integrated in
