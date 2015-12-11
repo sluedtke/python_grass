@@ -84,7 +84,7 @@ function Start_gpython()
   sleep 1200m
 
   " after opening the tmux session, we start the interpreter
-  call g:Send_cmd_gpython(g:gpython_interpreter)
+  call Send_cmd_gpython(g:gpython_interpreter)
 
   return 1
 endfunction
@@ -93,7 +93,7 @@ endfunction
 "
 function Send_line_gpython()
   let line = getline(".")
-  call g:Send_cmd_gpython(line)
+  call Send_cmd_gpython(line)
   return 1
 endfunction
 
