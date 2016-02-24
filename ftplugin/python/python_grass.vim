@@ -64,7 +64,7 @@ endfunction
 
 " Starting an external shell with a tmux session and start the interpreter
 "
-function Start_gpython()
+function Start_gpython(python_interpreter)
   " build the tmux conf file that is parsed at startup
   let cnflines = ['set-option -g prefix C-a',
         \ 'unbind-key C-b',
@@ -84,7 +84,7 @@ function Start_gpython()
   sleep 1200m
 
   " after opening the tmux session, we start the interpreter
-  call Send_cmd_gpython(g:gpython_interpreter)
+  call Send_cmd_gpython(a:python_interpreter)
 
   return 1
 endfunction
@@ -127,7 +127,7 @@ endfunction
 
 "==========================================================================
 "
-noremap <F2> :call Start_gpython()<CR>
+noremap <F2> :call Start_gpython(g:gpython_interpreter)<CR>
 noremap <LocalLeader>ro :call Start_gpython()<CR>
 noremap <LocalLeader>l :call Send_line_gpython()<CR>
 vnoremap <silent><buffer><LocalLeader>l <Esc> :call Send_selection_to_gpython()<CR>
