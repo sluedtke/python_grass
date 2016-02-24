@@ -31,14 +31,13 @@
 "  http://www.r-project.org/Licenses/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" set the termial emulator that is used .. should be user variable late on
-
+" set python interpreter if not set in vimrc
 if !exists("g:gpython_interpreter")
   let g:gpython_interpreter = "python"
 endif
 
+" set the termial emulator that is used .. should be user variable late on
 let g:gpython_term = "konsole"
-" let g:gpython_interpreter = "ipython"
 
 " building the start up string for the terminal
 " * workdir expands to the dir of the current file I think 
