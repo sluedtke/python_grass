@@ -32,8 +32,13 @@
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set the termial emulator that is used .. should be user variable late on
+
+if !exists("g:gpython_interpreter")
+  let g:gpython_interpreter = "python"
+endif
+
 let g:gpython_term = "konsole"
-let g:gpython_interpreter = "ipython"
+" let g:gpython_interpreter = "ipython"
 
 " building the start up string for the terminal
 " * workdir expands to the dir of the current file I think 
@@ -128,7 +133,7 @@ endfunction
 "==========================================================================
 "
 noremap <F2> :call Start_gpython(g:gpython_interpreter)<CR>
-noremap <LocalLeader>ro :call Start_gpython()<CR>
+noremap <LocalLeader>ro :call Start_gpython(g:gpython_interpreter)<CR>
 noremap <LocalLeader>l :call Send_line_gpython()<CR>
 vnoremap <silent><buffer><LocalLeader>l <Esc> :call Send_selection_to_gpython()<CR>
 vnoremap <silent><buffer><LocalLeader>ss <Esc> :call Send_selection_to_gpython()<CR>
