@@ -32,10 +32,16 @@
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set python interpreter if not set in vimrc
-if !exists("g:gpython_interpreter")
-  let g:gpython_interpreter = "python"
+if !exists("g:gpython2_interpreter")
+  let g:gpython2_interpreter = "python"
 endif
 
+" for python 3
+if !exists("g:gpython3_interpreter")
+  let g:gpython3_interpreter = "python3"
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set the termial emulator that is used .. should be user variable late on
 let g:gpython_term = "konsole"
 
@@ -131,8 +137,9 @@ endfunction
 
 "==========================================================================
 "
-noremap <F2> :call Start_gpython(g:gpython_interpreter)<CR>
-noremap <LocalLeader>ro :call Start_gpython(g:gpython_interpreter)<CR>
+noremap <F2> :call Start_gpython(g:gpython2_interpreter)<CR>
+noremap <F3> :call Start_gpython(g:gpython3_interpreter)<CR>
+
 noremap <LocalLeader>l :call Send_line_gpython()<CR>
 vnoremap <silent><buffer><LocalLeader>l <Esc> :call Send_selection_to_gpython()<CR>
 vnoremap <silent><buffer><LocalLeader>ss <Esc> :call Send_selection_to_gpython()<CR>
